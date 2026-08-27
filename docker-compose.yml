@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookflow-postgres
+    environment:
+      POSTGRES_DB: bookflow_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: Atlas1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
