@@ -88,30 +88,6 @@ PostgreSQL is used as the primary relational database.
 
 Liquibase is used to manage database schema changes and migrations.
 
-## 🐳 Docker
-
-The project is designed to run with Docker for easier development and deployment.
-
-## ▶️ Running the Project
-
-Clone the repository:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/bookflow.git
-```
-
-Navigate to the project:
-
-```bash
-cd bookflow
-```
-
-Run the application with your preferred IDE or using Gradle:
-
-```bash
-./gradlew bootRun
-```
-
 ## 📌 Project Status
 
 🚧 **In Development**
