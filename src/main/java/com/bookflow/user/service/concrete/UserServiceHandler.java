@@ -1,5 +1,6 @@
 package com.bookflow.user.service.concrete;
 
+import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.repository.UserRepository;
 import com.bookflow.user.service.abstraction.UserService;
@@ -16,13 +17,12 @@ public class UserServiceHandler implements UserService {
 
     @Override
     public UserEntity getUserById(Long id) {
-      return  userRepository.findById(id).orElseThrow();
-
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
     public UserEntity getUserByEmail(String email) {
-        return null;
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User does not exist with this email: " + email));
     }
 
     @Override
