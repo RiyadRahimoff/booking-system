@@ -1,12 +1,13 @@
 package com.bookflow.user.service.abstraction;
 
+import com.bookflow.user.dto.request.UpdateUserRequest;
+import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
-import liquibase.license.User;
 
 public interface UserService {
-    UserEntity getUserById(Long id);
+    UserResponse getUserById(Long id);
 
-    UserEntity getUserByEmail(String email);
+    UserResponse getUserByEmail(String email);
 
-    UserEntity updateUser(Long id, String firstName, String lastName, String email, String password);
+    UserResponse updateUser(Long id, UpdateUserRequest updateUser);
 }

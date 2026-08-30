@@ -1,32 +1,41 @@
 package com.bookflow.user.service.concrete;
 
 import com.bookflow.exception.UserNotFoundException;
+import com.bookflow.user.dto.request.UpdateUserRequest;
+import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
+import com.bookflow.user.mapper.UserMapper;
 import com.bookflow.user.repository.UserRepository;
 import com.bookflow.user.service.abstraction.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceHandler implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
 
     @Override
-    public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+    public UserResponse getUserById(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        return userMapper.toResponse(user);
     }
 
     @Override
-    public UserEntity getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User does not exist with this email: " + email));
+    public UserResponse getUserByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User does not exist with this email: " + email));
+        return userMapper.toResponse(user);
     }
 
     @Override
-    public UserEntity updateUser(Long id, String firstName, String lastName, String email, String password) {
-        return null;
+    public UserResponse updateUser(Long id, UpdateUserRequest updateUser) {
+        UserEntity user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException("User not found"));
+        user.setFirstName(updateUser.getFirstName());
+        user.setLastName(updateUser.getLastName());
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.toResponse(savedUser);
+
     }
 }
