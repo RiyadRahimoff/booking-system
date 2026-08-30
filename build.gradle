@@ -25,7 +25,10 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // ---------- SECURITY ----------
-  //  implementation 'org.springframework.boot:spring-boot-starter-security'
+     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // ---------REDIS---------
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // ---------- WEB ----------
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
