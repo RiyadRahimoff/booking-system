@@ -1,9 +1,11 @@
 package com.bookflow.user.service.concrete;
 
 import com.bookflow.exception.UserNotFoundException;
+import com.bookflow.exception.UserStatusPendingException;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
+import com.bookflow.user.enums.StatusEnum;
 import com.bookflow.user.mapper.UserMapper;
 import com.bookflow.user.repository.UserRepository;
 import com.bookflow.user.service.abstraction.UserService;
@@ -20,6 +22,9 @@ public class UserServiceHandler implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found!"));
+        if (user.getStatus() == StatusEnum.PENDING || (user.getStatus() == StatusEnum.BLOCKED)) {
+            throw new UserStatusPendingException("User status is PENDING or BLOCKED and profile cannot show");
+        }
         return userMapper.toResponse(user);
     }
 
@@ -31,7 +36,10 @@ public class UserServiceHandler implements UserService {
 
     @Override
     public UserResponse updateUser(Long id, UpdateUserRequest updateUser) {
-        UserEntity user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException("User not found"));
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (user.getStatus() == StatusEnum.PENDING || (user.getStatus() == StatusEnum.BLOCKED)) {
+            throw new UserStatusPendingException("User status is PENDING or BLOCKED and profile cannot update");
+        }
         user.setFirstName(updateUser.getFirstName());
         user.setLastName(updateUser.getLastName());
         UserEntity savedUser = userRepository.save(user);
