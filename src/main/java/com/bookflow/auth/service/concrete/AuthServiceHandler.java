@@ -4,8 +4,7 @@ import com.bookflow.auth.dto.request.*;
 import com.bookflow.auth.dto.response.LoginResponse;
 import com.bookflow.auth.service.abstraction.AuthService;
 import com.bookflow.email.EmailService;
-import com.bookflow.exception.EmailAlreadyExistsException;
-import com.bookflow.exception.InvalidRoleException;
+import com.bookflow.exception.*;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.enums.StatusEnum;
 import com.bookflow.user.enums.UserEnum;
@@ -59,6 +58,28 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public void verifyEmail(VerifyEmailRequest verifyEmailRequest) {
+        UserEntity user = userRepository.findByEmail(verifyEmailRequest.email())
+                .orElseThrow(() -> new UserNotFoundException("User not found!? " + verifyEmailRequest.email()));
+
+        if (user.getStatus() == StatusEnum.ACTIVE) {
+            throw new UserAlreadyExistException("This user already registered!");
+        }
+
+        String key = verificationKey(verifyEmailRequest.email());
+        String storedCode = redisTemplate.opsForValue().get(key);
+
+        if (storedCode == null) {
+            throw new VerificationCodeExpiredException(
+                    "Verification code has expired or does not exist");
+        }
+
+        if (!storedCode.equals(verifyEmailRequest.code())) {
+            throw new InvalidVerificationCodeException("Verification code is invalid");
+        }
+
+        user.setStatus(StatusEnum.ACTIVE);
+        userRepository.save(user);
+        redisTemplate.delete(key);
 
     }
 

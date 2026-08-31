@@ -1,6 +1,7 @@
 package com.bookflow.auth.controller;
 
 import com.bookflow.auth.dto.request.RegisterRequest;
+import com.bookflow.auth.dto.request.VerifyEmailRequest;
 import com.bookflow.auth.service.concrete.AuthServiceHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,4 +18,11 @@ public class AuthController {
     public void registerUser(@RequestBody RegisterRequest request) {
         authServiceHandler.registerUser(request);
     }
+
+    @PostMapping("/verify-email")
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyEmail(@RequestBody VerifyEmailRequest verifyEmailRequest) {
+       authServiceHandler.verifyEmail(verifyEmailRequest);
+    }
+
 }

@@ -42,4 +42,20 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
 
     }
+
+    @ExceptionHandler(EmailSendException.class)
+    public ResponseEntity <?> handleEmailException(EmailSendException exception){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity <?> handleUserExistException(UserAlreadyExistException exception){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errorResponse);
+    }
 }
