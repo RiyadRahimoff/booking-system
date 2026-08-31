@@ -1,11 +1,13 @@
 package com.bookflow.user.service.concrete;
 
+import com.bookflow.exception.InvalidRoleException;
 import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.exception.UserStatusPendingException;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.enums.StatusEnum;
+import com.bookflow.user.enums.UserEnum;
 import com.bookflow.user.mapper.UserMapper;
 import com.bookflow.user.repository.UserRepository;
 import com.bookflow.user.service.abstraction.UserService;
@@ -45,5 +47,18 @@ public class UserServiceHandler implements UserService {
         UserEntity savedUser = userRepository.save(user);
         return userMapper.toResponse(savedUser);
 
+    }
+
+    @Override
+    public UserResponse deactivateUser(Long id) {
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (user.getRole() == UserEnum.ADMIN) {
+            throw new InvalidRoleException("This role cannot be frozen");
+        } else if (user.getStatus() == StatusEnum.BLOCKED || user.getStatus() == StatusEnum.PENDING || user.getStatus() == StatusEnum.INACTIVE) {
+            throw new InvalidRoleException("Your account status don't allow this operation");
+        }
+        user.setStatus(StatusEnum.INACTIVE);
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.toResponse(savedUser);
     }
 }

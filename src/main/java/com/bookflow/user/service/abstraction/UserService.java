@@ -10,4 +10,6 @@ public interface UserService {
     UserResponse getUserByEmail(String email);
 
     UserResponse updateUser(Long id, UpdateUserRequest updateUser);
+
+    UserResponse deactivateUser(Long id);
 }

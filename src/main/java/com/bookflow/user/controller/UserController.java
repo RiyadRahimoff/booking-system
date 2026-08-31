@@ -27,9 +27,16 @@ public class UserController {
         return userServiceHandler.getUserByEmail(email);
     }
 
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/{id}/update")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest updateUser) {
        return userServiceHandler.updateUser(id,updateUser);
     }
+
+    @PatchMapping("/{id}/deactivate")
+    public UserResponse deactivateUser(@PathVariable Long id) {
+        return userServiceHandler.deactivateUser(id);
+    }
+
+
 }
