@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +34,29 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public void registerUser(RegisterRequest request) {
+
         UserEnum role = parseRole(request.role());
-        if (userRepository.existsByEmail(request.email())) {
-            throw new EmailAlreadyExistsException("Email is already registered: " + request.email());
+
+        Optional<UserEntity> existingUser =
+                userRepository.findByEmail(request.email());
+
+        if (existingUser.isPresent()) {
+
+            UserEntity user = existingUser.get();
+
+            if (user.getStatus() == StatusEnum.PENDING) {
+                throw new EmailAlreadyVerifiedException(
+                        "Email is already registered but not verified"
+                );
+            }
+
+            throw new EmailAlreadyExistsException(
+                    "Email is already registered: " + request.email()
+            );
         }
+
         String encodedPassword = passwordEncoder.encode(request.password());
+
         UserEntity user = UserEntity.builder()
                 .firstName(request.firstName())
                 .lastName(request.lastName())
@@ -48,12 +67,17 @@ public class AuthServiceHandler implements AuthService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+
         userRepository.save(user);
+
         String code = generateVerificationCode();
+
         saveVerificationCode(request.email(), code);
-        emailService.sendVerificationCode(request.email(), code);
 
-
+        emailService.sendVerificationCode(
+                request.email(),
+                code
+        );
     }
 
     @Override
@@ -85,7 +109,30 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public void resendVerificationRequest(ResendVerificationRequest verificationRequest) {
+       UserEntity user = userRepository.findByEmail(verificationRequest.email())
+               .orElseThrow(()->new UserNotFoundException("User not found?!"));
 
+       if(user.getStatus()== StatusEnum.ACTIVE){
+           throw new UserAlreadyExistException("User account already active");
+       }
+        String cooldownKey = "resend:" + verificationRequest.email();
+
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(cooldownKey))) {
+            throw new ResendCooldownException(
+                    "Please wait before requesting a new code"
+            );
+        }
+
+        String code = generateVerificationCode();
+        saveVerificationCode(verificationRequest.email(),code);
+
+        emailService.sendVerificationCode(verificationRequest.email(),code);
+
+        redisTemplate.opsForValue().set(
+                cooldownKey,
+                "1",
+                RESEND_COOLDOWN
+        );
     }
 
     @Override

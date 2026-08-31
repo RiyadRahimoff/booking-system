@@ -1,6 +1,7 @@
 package com.bookflow.auth.controller;
 
 import com.bookflow.auth.dto.request.RegisterRequest;
+import com.bookflow.auth.dto.request.ResendVerificationRequest;
 import com.bookflow.auth.dto.request.VerifyEmailRequest;
 import com.bookflow.auth.service.concrete.AuthServiceHandler;
 import lombok.RequiredArgsConstructor;
@@ -25,4 +26,11 @@ public class AuthController {
        authServiceHandler.verifyEmail(verifyEmailRequest);
     }
 
-}
+    @PostMapping("/resend-verify")
+    @ResponseStatus(HttpStatus.OK)
+    public void resendVerificationRequest(@RequestBody ResendVerificationRequest verificationRequest) {
+        authServiceHandler.resendVerificationRequest(verificationRequest);
+    }
+
+
+    }
