@@ -58,4 +58,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(ResendCooldownException.class)
+    public ResponseEntity<?> handleCooldownException(ResendCooldownException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(errorResponse);
+    }
 }
