@@ -42,8 +42,15 @@ public class UserServiceHandler implements UserService {
         if (user.getStatus() == StatusEnum.PENDING || (user.getStatus() == StatusEnum.BLOCKED)) {
             throw new UserStatusPendingException("User status is PENDING or BLOCKED and profile cannot update");
         }
-        user.setFirstName(updateUser.getFirstName());
-        user.setLastName(updateUser.getLastName());
+
+        if (updateUser.getFirstName() != null && !updateUser.getFirstName().isBlank()) {
+            user.setFirstName(updateUser.getFirstName());
+        }
+
+        if (updateUser.getLastName() != null && !updateUser.getLastName().isBlank()) {
+            user.setLastName(updateUser.getLastName());
+        }
+
         UserEntity savedUser = userRepository.save(user);
         return userMapper.toResponse(savedUser);
 
