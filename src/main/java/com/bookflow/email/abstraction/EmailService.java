@@ -1,4 +1,4 @@
-package com.bookflow.email;
+package com.bookflow.email.abstraction;
 
 import org.springframework.stereotype.Component;
 
