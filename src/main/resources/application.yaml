@@ -13,6 +13,12 @@ spring:
       ddl-auto: validate
     show-sql: true
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
   data:
     redis:
       host: ${REDIS_HOST}
