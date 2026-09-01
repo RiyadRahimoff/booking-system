@@ -25,6 +25,15 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(VerificationCodeExpiredException.class)
+    public ResponseEntity<?> handleExpiredException(VerificationCodeExpiredException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+
+    }
+
     @ExceptionHandler(InvalidRoleException.class)
     public ResponseEntity<?> handleRoleException(InvalidRoleException exception) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
@@ -65,5 +74,13 @@ public class GlobalExceptionHandler {
                 return ResponseEntity
                         .status(HttpStatus.FORBIDDEN)
                         .body(errorResponse);
+    }
+
+    @ExceptionHandler(RabbitMQException.class)
+    public ResponseEntity<?> handleRabbitMQException(RabbitMQException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(errorResponse);
     }
 }
