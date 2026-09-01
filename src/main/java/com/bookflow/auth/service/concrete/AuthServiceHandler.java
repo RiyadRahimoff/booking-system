@@ -3,7 +3,9 @@ package com.bookflow.auth.service.concrete;
 import com.bookflow.auth.dto.request.*;
 import com.bookflow.auth.dto.response.LoginResponse;
 import com.bookflow.auth.service.abstraction.AuthService;
-import com.bookflow.email.EmailService;
+import com.bookflow.email.abstraction.EmailProducer;
+import com.bookflow.email.abstraction.EmailService;
+import com.bookflow.email.entity.EmailVerificationMessage;
 import com.bookflow.exception.*;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.enums.StatusEnum;
@@ -26,6 +28,7 @@ public class AuthServiceHandler implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
+    private final EmailProducer emailProducer;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final Duration VERIFICATION_TTL = Duration.ofMinutes(5);
@@ -74,10 +77,8 @@ public class AuthServiceHandler implements AuthService {
 
         saveVerificationCode(request.email(), code);
 
-        emailService.sendVerificationCode(
-                request.email(),
-                code
-        );
+        emailProducer.sendVerificationEmailMessage(new EmailVerificationMessage(request.email(),code));
+
     }
 
     @Override
@@ -126,7 +127,7 @@ public class AuthServiceHandler implements AuthService {
         String code = generateVerificationCode();
         saveVerificationCode(verificationRequest.email(),code);
 
-        emailService.sendVerificationCode(verificationRequest.email(),code);
+        emailProducer.sendVerificationEmailMessage(new EmailVerificationMessage(verificationRequest.email(),code));
 
         redisTemplate.opsForValue().set(
                 cooldownKey,
