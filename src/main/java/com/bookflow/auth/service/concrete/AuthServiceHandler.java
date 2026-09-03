@@ -2,6 +2,7 @@ package com.bookflow.auth.service.concrete;
 
 import com.bookflow.auth.dto.request.*;
 import com.bookflow.auth.dto.response.LoginResponse;
+import com.bookflow.auth.security.JwtService;
 import com.bookflow.auth.service.abstraction.AuthService;
 import com.bookflow.email.abstraction.EmailProducer;
 import com.bookflow.email.abstraction.EmailService;
@@ -16,9 +17,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,14 +32,14 @@ import java.util.Optional;
 public class AuthServiceHandler implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
+    private final JwtService jwtService;
     private final StringRedisTemplate redisTemplate;
     private final EmailProducer emailProducer;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final Duration VERIFICATION_TTL = Duration.ofMinutes(5);
     private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(60);
-
+    private static final Duration REFRESH_TOKEN_TTL = Duration.ofDays(7);
 
     @Override
     public void registerUser(RegisterRequest request) {
@@ -138,7 +144,31 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        return null;
+        UserEntity user = userRepository.findByEmail(loginRequest.email())
+                .orElseThrow(()->new InvalidCredentialsException("Invalid email or password"));
+
+        if(!passwordEncoder.matches(loginRequest.password(),user.getPassword())){
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+        if(user.getStatus()==StatusEnum.PENDING){
+            throw new UserStatusPendingException("User account need to be verify.");
+
+        }
+        if(user.getStatus()==StatusEnum.BLOCKED){
+            throw new UserStatusPendingException("User account blocked. Please contact admin");
+
+        }
+        if(user.getStatus()==StatusEnum.INACTIVE){
+            throw new UserStatusPendingException("User account inactive.");
+        }
+
+        String accessToken = jwtService.generateAccessToken(loginRequest.email());
+        String refreshToken = jwtService.generateRefreshToken(loginRequest.email());
+
+        saveRefreshToken(user.getId(),refreshToken);
+
+        return LoginResponse.of(accessToken,refreshToken);
+
     }
 
     @Override
@@ -175,5 +205,24 @@ public class AuthServiceHandler implements AuthService {
 
     private String verificationKey(String email) {
         return "verification:" + email;
+    }
+    private void saveRefreshToken(Long userId, String refreshToken) {
+        String hashedToken = hashToken(refreshToken);
+        String key = refreshTokenKey(userId);
+        redisTemplate.opsForValue().set(key, hashedToken, REFRESH_TOKEN_TTL);
+    }
+
+    private String hashToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
+        }
+    }
+
+    private String refreshTokenKey(Long userId) {
+        return "refresh:" + userId;
     }
 }

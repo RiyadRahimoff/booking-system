@@ -83,4 +83,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    ResponseEntity<?> handleInvalidCredentialsException(InvalidCredentialsException excep){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(),excep.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponse);
+    }
 }
