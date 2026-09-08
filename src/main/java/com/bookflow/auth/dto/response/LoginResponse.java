@@ -2,10 +2,9 @@ package com.bookflow.auth.dto.response;
 
 public record LoginResponse(
         String accessToken,
-        String refreshToken,
-        String tokenType
+        String refreshToken
 ) {
     public static LoginResponse of(String accessToken, String refreshToken) {
-        return new LoginResponse(accessToken, refreshToken, "Bearer");
+        return new LoginResponse(accessToken, refreshToken);
     }
 }

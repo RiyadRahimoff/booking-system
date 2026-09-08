@@ -25,7 +25,7 @@ public class EmailServiceHandler implements EmailService {
         try{
          javaMailSender.send(message);
         }catch (Exception ex){
-            throw new EmailSendException("Email system crashed!");
+            throw new EmailSendException("Email system crashed!  "+ ex);
         }
     }
 }
