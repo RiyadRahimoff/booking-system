@@ -2,6 +2,8 @@ package com.bookflow.auth.service.concrete;
 
 import com.bookflow.auth.dto.request.*;
 import com.bookflow.auth.dto.response.LoginResponse;
+import com.bookflow.auth.entity.RefreshTokenEntity;
+import com.bookflow.auth.repository.RefreshTokenRepository;
 import com.bookflow.auth.security.JwtService;
 import com.bookflow.auth.service.abstraction.AuthService;
 import com.bookflow.email.abstraction.EmailProducer;
@@ -12,6 +14,7 @@ import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.enums.StatusEnum;
 import com.bookflow.user.enums.UserEnum;
 import com.bookflow.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,12 +37,13 @@ public class AuthServiceHandler implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final StringRedisTemplate redisTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final EmailProducer emailProducer;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final Duration VERIFICATION_TTL = Duration.ofMinutes(5);
     private static final Duration RESEND_COOLDOWN = Duration.ofSeconds(60);
-    private static final Duration REFRESH_TOKEN_TTL = Duration.ofDays(7);
+    private static final Duration RESET_PASSWORD_TTL = Duration.ofMinutes(10);
 
     @Override
     public void registerUser(RegisterRequest request) {
@@ -115,6 +119,55 @@ public class AuthServiceHandler implements AuthService {
     }
 
     @Override
+    public void forgotPassword(ForgotPasswordRequest request) {
+        UserEntity user = userRepository.findByEmail(request.email())
+                .orElseThrow(()->new UserNotFoundException("User not found"));
+
+        String code = generateVerificationCode();
+        String key= "resetPassword: "+ request.email();
+
+        redisTemplate.opsForValue().set(key,code,RESET_PASSWORD_TTL);
+        emailProducer.sendVerificationEmailMessage(new EmailVerificationMessage(request.email(),code));
+    }
+
+
+
+    @Override
+    public void resetPassword(ResetPasswordRequest request) {
+        UserEntity user = userRepository.findByEmail(request.email())
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        String key = "reset-password: " + request.email();
+
+        String storedCode = redisTemplate.opsForValue().get(key);
+
+        if (storedCode == null) {
+            throw new VerificationCodeExpiredException(
+                    "Reset code has expired or does not exist"
+            );
+        }
+
+        if (!storedCode.equals(request.code())) {
+            throw new InvalidVerificationCodeException(
+                    "Reset code is invalid"
+            );
+        }
+
+        user.setPassword(
+                passwordEncoder.encode(request.newPassword())
+        );
+
+        user.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        redisTemplate.delete(key);
+    }
+
+
+    @Override
     public void resendVerificationRequest(ResendVerificationRequest verificationRequest) {
        UserEntity user = userRepository.findByEmail(verificationRequest.email())
                .orElseThrow(()->new UserNotFoundException("User not found?!"));
@@ -142,7 +195,9 @@ public class AuthServiceHandler implements AuthService {
         );
     }
 
+
     @Override
+    @Transactional
     public LoginResponse login(LoginRequest loginRequest) {
         UserEntity user = userRepository.findByEmail(loginRequest.email())
                 .orElseThrow(()->new InvalidCredentialsException("Invalid email or password"));
@@ -165,7 +220,7 @@ public class AuthServiceHandler implements AuthService {
         String accessToken = jwtService.generateAccessToken(loginRequest.email());
         String refreshToken = jwtService.generateRefreshToken(loginRequest.email());
 
-        saveRefreshToken(user.getId(),refreshToken);
+        saveRefreshToken(user,refreshToken);
 
         return LoginResponse.of(accessToken,refreshToken);
 
@@ -173,12 +228,42 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        return null;
+        String refreshToken = refreshTokenRequest.refreshToken();
+
+        if (!jwtService.isTokenValid(refreshToken)) {
+            throw new InvalidTokenException("Refresh token is invalid or expired");
+        }
+
+        String email = jwtService.extractEmail(refreshToken);
+
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidTokenException("Refresh token is invalid"));
+
+        RefreshTokenEntity storedToken = refreshTokenRepository.findUserById(user.getId())
+                .orElseThrow(() -> new InvalidTokenException("Refresh token is invalid or has been revoked"));
+
+        if (storedToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Refresh token has expired");
+        }
+
+        if (!storedToken.getTokenHash().equals(hashToken(refreshToken))) {
+            throw new InvalidTokenException("Refresh token is invalid");
+        }
+
+        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+
+        return LoginResponse.of(newAccessToken, refreshToken);
     }
 
     @Override
     public void logout(String refreshToken) {
 
+        if(!jwtService.isTokenValid(refreshToken)){
+            return;
+        }
+        String email = jwtService.extractEmail(refreshToken);
+
+        userRepository.findByEmail(email).ifPresent(user-> refreshTokenRepository.deleteUserById(user.getId()));
     }
 
     private UserEnum parseRole(String rawRole) {
@@ -205,11 +290,18 @@ public class AuthServiceHandler implements AuthService {
 
     private String verificationKey(String email) {
         return "verification:" + email;
+
     }
-    private void saveRefreshToken(Long userId, String refreshToken) {
-        String hashedToken = hashToken(refreshToken);
-        String key = refreshTokenKey(userId);
-        redisTemplate.opsForValue().set(key, hashedToken, REFRESH_TOKEN_TTL);
+
+    private void saveRefreshToken(UserEntity user, String refreshToken) {
+        refreshTokenRepository.deleteUserById(user.getId());
+        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .user(user)
+                .tokenHash(hashToken(refreshToken))
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .createdAt(LocalDateTime.now())
+                .build();
+        refreshTokenRepository.save(refreshTokenEntity);
     }
 
     private String hashToken(String token) {
