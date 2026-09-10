@@ -36,6 +36,10 @@ dependencies {
     // ----------MAIL--------
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // -----------RATE LIMITER----------
+    implementation 'com.bucket4j:bucket4j_jdk17-core:8.14.0'
+    implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.14.0'
+
     // ---------- WEB ----------
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

@@ -7,7 +7,6 @@ import com.bookflow.auth.repository.RefreshTokenRepository;
 import com.bookflow.auth.security.JwtService;
 import com.bookflow.auth.service.abstraction.AuthService;
 import com.bookflow.email.abstraction.EmailProducer;
-import com.bookflow.email.abstraction.EmailService;
 import com.bookflow.email.entity.EmailVerificationMessage;
 import com.bookflow.exception.*;
 import com.bookflow.user.entity.UserEntity;
@@ -27,7 +26,6 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -120,7 +118,7 @@ public class AuthServiceHandler implements AuthService {
 
     @Override
     public void forgotPassword(ForgotPasswordRequest request) {
-        UserEntity user = userRepository.findByEmail(request.email())
+        userRepository.findByEmail(request.email())
                 .orElseThrow(()->new UserNotFoundException("User not found"));
 
         String code = generateVerificationCode();
@@ -217,8 +215,8 @@ public class AuthServiceHandler implements AuthService {
             throw new UserStatusPendingException("User account inactive.");
         }
 
-        String accessToken = jwtService.generateAccessToken(loginRequest.email());
-        String refreshToken = jwtService.generateRefreshToken(loginRequest.email());
+        String accessToken = jwtService.generateAccessToken(loginRequest.email(),user.getId());
+        String refreshToken = jwtService.generateRefreshToken(loginRequest.email(),user.getId());
 
         saveRefreshToken(user,refreshToken);
 
@@ -250,7 +248,7 @@ public class AuthServiceHandler implements AuthService {
             throw new InvalidTokenException("Refresh token is invalid");
         }
 
-        String newAccessToken = jwtService.generateAccessToken(user.getEmail());
+        String newAccessToken = jwtService.generateAccessToken(user.getEmail(),user.getId());
 
         return LoginResponse.of(newAccessToken, refreshToken);
     }
