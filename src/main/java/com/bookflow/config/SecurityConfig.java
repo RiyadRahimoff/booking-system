@@ -23,6 +23,7 @@ public class SecurityConfig {
             "/auth/refresh-token",
             "/auth/forgot-Password",
             "/auth/reset-Password",
+            "/test/**",
 
             "/swagger-ui/**",
             "/v3/api-docs/**"

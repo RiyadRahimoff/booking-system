@@ -21,20 +21,21 @@ public class JwtService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    public String generateAccessToken(String email){
-       return buildToken(email,accessTokenExpiration);
+    public String generateAccessToken(String email,Long userId){
+       return buildToken(userId,email,accessTokenExpiration);
     }
 
-    public String generateRefreshToken(String email){
-        return buildToken(email,refreshTokenExpiration);
+    public String generateRefreshToken(String email,Long userId){
+        return buildToken(userId,email,refreshTokenExpiration);
     }
 
-    private String buildToken(String email, long expiration) {
+    private String buildToken(Long userId,String email, long expiration) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("userId",userId)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
