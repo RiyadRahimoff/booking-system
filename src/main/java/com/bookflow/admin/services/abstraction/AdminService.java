@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface AdminService {
     List<UserEntity> getUsers();
+
+    UserEntity getUserByID(Long id);
 }

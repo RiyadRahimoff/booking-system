@@ -28,7 +28,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         RateLimitRule rule = getRule(path);
 
-        // Bu endpoint üçün rate limit yoxdursa
         if (rule == null) {
             filterChain.doFilter(request, response);
             return;
@@ -92,6 +91,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
                             5,
                             Duration.ofMinutes(1)
                     );
+
+            case "/admin/get/users" ->
+                new RateLimitRule(
+                        "getAllusers",
+                        2,
+                        Duration.ofSeconds(30)
+                );
 
             default -> null;
         };

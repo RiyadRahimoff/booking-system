@@ -28,5 +28,12 @@ public class AdminController {
     public List<UserEntity> getUsers() {
         return adminServiceHandler.getUsers();
     }
+
+    @GetMapping("/user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserEntity getUserByID(@PathVariable Long id) {
+        return adminServiceHandler.getUserByID(id);
+    }
+
 }
 

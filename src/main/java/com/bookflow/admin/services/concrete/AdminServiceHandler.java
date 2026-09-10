@@ -4,8 +4,6 @@ import com.bookflow.admin.repository.AdminRepository;
 import com.bookflow.admin.services.abstraction.AdminService;
 import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.user.entity.UserEntity;
-import liquibase.license.User;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +23,11 @@ public class AdminServiceHandler implements AdminService {
         }
 
         return users;
+    }
+
+    @Override
+    public UserEntity getUserByID(Long id) {
+        return adminRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("This user not found at database"));
     }
 }
