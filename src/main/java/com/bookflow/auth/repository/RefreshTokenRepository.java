@@ -12,7 +12,9 @@ import java.util.Optional;
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity,Long> {
     Optional<RefreshTokenEntity> findUserById(Long userId);
 
-    void deleteUserById(Long id);
+    @Modifying
+    @Query("DELETE FROM RefreshTokenEntity r WHERE r.user.id = :id")
+    void deleteUserById(@Param("id") Long id);
 
     @Modifying
     @Query("DELETE FROM RefreshTokenEntity r WHERE r.expiresAt < :now")

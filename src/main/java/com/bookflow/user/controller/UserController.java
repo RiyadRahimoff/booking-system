@@ -1,5 +1,6 @@
 package com.bookflow.user.controller;
 
+import com.bookflow.auth.dto.request.DeleteAccountPasswordConfirmRequest;
 import com.bookflow.auth.security.UserPrincipal;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,13 +30,20 @@ public class UserController {
     @PatchMapping("/me/update")
     @ResponseStatus(HttpStatus.OK)
     public UserResponse updateUser(@AuthenticationPrincipal UserPrincipal principal, @RequestBody UpdateUserRequest updateUser) {
-       return userServiceHandler.updateUser(principal.user().getId(), updateUser);
+        return userServiceHandler.updateUser(principal.user().getId(), updateUser);
     }
 
     @PatchMapping("/me/deactivate")
+    @ResponseStatus(HttpStatus.OK)
     public UserResponse deactivateUser(@AuthenticationPrincipal UserPrincipal principal) {
         return userServiceHandler.deactivateUser(principal.user().getId());
     }
 
+    @DeleteMapping("/me/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteUser(@AuthenticationPrincipal UserPrincipal principal
+            , @RequestBody DeleteAccountPasswordConfirmRequest pass) {
+        return userServiceHandler.deleteUser(principal.user().getId(), pass);
+    }
 
 }
