@@ -1,0 +1,96 @@
+databaseChangeLog:
+
+    - changeSet:
+        id: 20262000
+        author: Riyad Rahimov
+
+        changes:
+
+          - createTable:
+              tableName: business
+              columns:
+
+                - column:
+                    name: id
+                    type: BIGINT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+
+                - column:
+                    name: owner_id
+                    type: BIGINT
+                    constraints:
+                      nullable: false
+                      unique: true
+
+                - column:
+                    name: name
+                    type: VARCHAR(100)
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: description
+                    type: TEXT
+
+                - column:
+                    name: phone
+                    type: VARCHAR(20)
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: email
+                    type: VARCHAR(255)
+
+                - column:
+                    name: address
+                    type: VARCHAR(255)
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: city
+                    type: VARCHAR(100)
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: latitude
+                    type: DECIMAL(10,7)
+
+                - column:
+                    name: longitude
+                    type: DECIMAL(10,7)
+
+                - column:
+                    name: status
+                    type: VARCHAR(20)
+                    defaultValue: 'ACTIVE'
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: created_at
+                    type: TIMESTAMP
+                    defaultValueDate: CURRENT_TIMESTAMP
+                    constraints:
+                      nullable: false
+
+                - column:
+                    name: updated_at
+                    type: TIMESTAMP
+                    defaultValueDate: CURRENT_TIMESTAMP
+                    constraints:
+                      nullable: false
+
+          - addForeignKeyConstraint:
+              baseTableName: business
+              baseColumnNames: owner_id
+              referencedTableName: users
+              referencedColumnNames: id
+              constraintName: fk_business_owner
+              onDelete: CASCADE
+
