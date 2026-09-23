@@ -4,14 +4,11 @@ import com.bookflow.auth.dto.request.DeleteAccountPasswordConfirmRequest;
 import com.bookflow.auth.security.UserPrincipal;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
-import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.service.concrete.UserServiceHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController

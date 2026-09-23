@@ -1,7 +1,7 @@
-package com.bookflow.admin.services.concrete;
+package com.bookflow.admin.service.concrete;
 
 import com.bookflow.admin.repository.AdminRepository;
-import com.bookflow.admin.services.abstraction.AdminService;
+import com.bookflow.admin.service.abstraction.AdminService;
 import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;

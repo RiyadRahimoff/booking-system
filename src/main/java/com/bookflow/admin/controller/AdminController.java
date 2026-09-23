@@ -1,6 +1,6 @@
 package com.bookflow.admin.controller;
 
-import com.bookflow.admin.services.concrete.AdminServiceHandler;
+import com.bookflow.admin.service.concrete.AdminServiceHandler;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.service.concrete.UserServiceHandler;

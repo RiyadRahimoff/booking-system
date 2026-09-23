@@ -33,7 +33,8 @@
 - [x] Global exception handling
 - [ ] Update profile
 - [ ] Change password
-- [ ] Delete/deactivate account
+- [x] Deactivate account
+- [x] Delete account
 
 ## Service
 

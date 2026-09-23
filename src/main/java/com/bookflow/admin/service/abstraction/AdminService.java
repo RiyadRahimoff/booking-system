@@ -1,4 +1,4 @@
-package com.bookflow.admin.services.abstraction;
+package com.bookflow.admin.service.abstraction;
 
 import com.bookflow.user.entity.UserEntity;
 
