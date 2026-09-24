@@ -91,4 +91,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(errorResponse);
     }
+
+    @ExceptionHandler(BusinessAlreadyExistsException.class)
+    ResponseEntity<?> handleBusinessAlreadyExistsException (BusinessAlreadyExistsException exception){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(),exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+
+    }
 }

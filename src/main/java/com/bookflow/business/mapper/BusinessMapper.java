@@ -2,7 +2,9 @@ package com.bookflow.business.mapper;
 
 import com.bookflow.business.dto.response.BusinessResponse;
 import com.bookflow.business.entity.BusinessEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BusinessMapper {
     public BusinessResponse toResponse(BusinessEntity business) {
         return new BusinessResponse(

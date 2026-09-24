@@ -1,6 +1,8 @@
 package com.bookflow.admin.controller;
 
 import com.bookflow.admin.service.concrete.AdminServiceHandler;
+import com.bookflow.business.entity.BusinessEntity;
+import com.bookflow.business.service.concrete.BusinessServiceHandler;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.service.concrete.UserServiceHandler;
@@ -16,6 +18,7 @@ import java.util.List;
 public class AdminController {
     private final UserServiceHandler userServiceHandler;
     private final AdminServiceHandler adminServiceHandler;
+    private final BusinessServiceHandler businessServiceHandler;
 
     @GetMapping("/find/{email}")
     @ResponseStatus(HttpStatus.OK)
@@ -33,6 +36,12 @@ public class AdminController {
     @ResponseStatus(HttpStatus.OK)
     public UserEntity getUserByID(@PathVariable Long id) {
         return adminServiceHandler.getUserByID(id);
+    }
+
+    @GetMapping("/all/business")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BusinessEntity> getAllBusiness() {
+      return  businessServiceHandler.getAllBusiness();
     }
 
 }
