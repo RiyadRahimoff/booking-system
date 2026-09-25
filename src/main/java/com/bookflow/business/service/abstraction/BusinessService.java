@@ -13,4 +13,6 @@ public interface BusinessService {
 
     BusinessResponse getBusinessById(Long id);
 
+    List<BusinessResponse> getAllPendingBusiness();
+
 }

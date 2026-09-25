@@ -3,6 +3,7 @@ package com.bookflow.business.service.concrete;
 import com.bookflow.business.dto.request.CreateBusinessRequest;
 import com.bookflow.business.dto.response.BusinessResponse;
 import com.bookflow.business.entity.BusinessEntity;
+import com.bookflow.business.enums.BusinessStatus;
 import com.bookflow.business.mapper.BusinessMapper;
 import com.bookflow.business.repository.BusinessRepository;
 import com.bookflow.business.service.abstraction.BusinessService;
@@ -68,8 +69,16 @@ public class BusinessServiceHandler implements BusinessService {
 
     @Override
     public BusinessResponse getBusinessById(Long id) {
-        BusinessEntity business = businessRepository.findById(id)
+        BusinessEntity business = businessRepository.findByOwner_Id(id)
                 .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
         return businessMapper.toResponse(business);
+    }
+
+    @Override
+    public List<BusinessResponse> getAllPendingBusiness() {
+        return businessRepository.findAllByStatus(PENDING)
+                .stream()
+                .map(businessMapper::toResponse)
+                .toList();
     }
 }

@@ -51,5 +51,11 @@ public class AdminController {
          return businessServiceHandler.getBusinessById(id);
     }
 
+    @GetMapping("/pending-business")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BusinessResponse> getAllPendingBusiness() {
+        return businessServiceHandler.getAllPendingBusiness();
+    }
+
 }
 
