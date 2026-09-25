@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity,Long> {
-    Optional<RefreshTokenEntity> findUserById(Long userId);
+    Optional<RefreshTokenEntity> findByUser_Id(Long userId);
 
     @Modifying
     @Query("DELETE FROM RefreshTokenEntity r WHERE r.user.id = :id")

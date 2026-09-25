@@ -225,32 +225,55 @@ public class AuthServiceHandler implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        String refreshToken = refreshTokenRequest.refreshToken();
 
-        if (!jwtService.isTokenValid(refreshToken)) {
+        String oldRefreshToken = refreshTokenRequest.refreshToken();
+
+        if (!jwtService.isTokenValid(oldRefreshToken)) {
             throw new InvalidTokenException("Refresh token is invalid or expired");
         }
 
-        String email = jwtService.extractEmail(refreshToken);
+        String email = jwtService.extractEmail(oldRefreshToken);
 
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidTokenException("Refresh token is invalid"));
+                .orElseThrow(() ->
+                        new InvalidTokenException("Refresh token is invalid"));
 
-        RefreshTokenEntity storedToken = refreshTokenRepository.findUserById(user.getId())
-                .orElseThrow(() -> new InvalidTokenException("Refresh token is invalid or has been revoked"));
+        RefreshTokenEntity storedToken =
+                refreshTokenRepository.findByUser_Id(user.getId())
+                        .orElseThrow(() ->
+                                new InvalidTokenException(
+                                        "Refresh token is invalid or has been revoked"
+                                ));
 
         if (storedToken.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new InvalidTokenException("Refresh token has expired");
         }
 
-        if (!storedToken.getTokenHash().equals(hashToken(refreshToken))) {
+        if (!storedToken.getTokenHash().equals(hashToken(oldRefreshToken))) {
             throw new InvalidTokenException("Refresh token is invalid");
         }
 
-        String newAccessToken = jwtService.generateAccessToken(user.getEmail(),user.getId());
+        refreshTokenRepository.delete(storedToken);
 
-        return LoginResponse.of(newAccessToken, refreshToken);
+        String newAccessToken =
+                jwtService.generateAccessToken(user.getEmail(), user.getId());
+
+        String newRefreshToken =
+                jwtService.generateRefreshToken(user.getEmail(), user.getId());
+
+
+        RefreshTokenEntity newToken = RefreshTokenEntity.builder()
+                .user(user)
+                .tokenHash(hashToken(newRefreshToken))
+                .expiresAt(LocalDateTime.now().plusDays(7))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        refreshTokenRepository.save(newToken);
+
+        return LoginResponse.of(newAccessToken, newRefreshToken);
     }
 
     @Override

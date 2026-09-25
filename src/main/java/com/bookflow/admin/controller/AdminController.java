@@ -57,5 +57,11 @@ public class AdminController {
         return businessServiceHandler.getAllPendingBusiness();
     }
 
+    @PostMapping("/business/approve/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BusinessResponse approvePendingBusiness(@PathVariable Long id) {
+        return businessServiceHandler.approvePendingBusiness(id);
+    }
+
 }
 

@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
+import static com.bookflow.business.enums.BusinessStatus.ACTIVE;
 import static com.bookflow.business.enums.BusinessStatus.PENDING;
 
 @Service
@@ -69,7 +71,7 @@ public class BusinessServiceHandler implements BusinessService {
 
     @Override
     public BusinessResponse getBusinessById(Long id) {
-        BusinessEntity business = businessRepository.findByOwner_Id(id)
+        BusinessEntity business = businessRepository.findById(id)
                 .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
         return businessMapper.toResponse(business);
     }
@@ -80,5 +82,17 @@ public class BusinessServiceHandler implements BusinessService {
                 .stream()
                 .map(businessMapper::toResponse)
                 .toList();
+    }
+
+    @Override
+    public BusinessResponse approvePendingBusiness(Long businessId) {
+        BusinessEntity business = businessRepository.findById(businessId)
+                .orElseThrow(() ->
+                        new BusinessNotFoundException("Business not found")
+                );
+        business.setStatus(ACTIVE);
+        BusinessEntity savedBusiness = businessRepository.save(business);
+
+        return businessMapper.toResponse(savedBusiness);
     }
 }
