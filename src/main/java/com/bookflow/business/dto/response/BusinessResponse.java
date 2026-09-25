@@ -16,6 +16,7 @@ public record BusinessResponse(
         BigDecimal latitude,
         BigDecimal longitude,
         BusinessStatus status,
+        OwnerResponse ownerResponse,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

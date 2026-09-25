@@ -7,13 +7,16 @@ import com.bookflow.business.mapper.BusinessMapper;
 import com.bookflow.business.repository.BusinessRepository;
 import com.bookflow.business.service.abstraction.BusinessService;
 import com.bookflow.exception.BusinessAlreadyExistsException;
+import com.bookflow.exception.BusinessNotFoundException;
 import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.bookflow.business.enums.BusinessStatus.PENDING;
 
@@ -56,7 +59,17 @@ public class BusinessServiceHandler implements BusinessService {
     }
 
     @Override
-    public List<BusinessEntity> getAllBusiness() {
-        return businessRepository.findAll();
+    public List<BusinessResponse> getAllBusiness() {
+        return businessRepository.findAll()
+                .stream()
+                .map(businessMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public BusinessResponse getBusinessById(Long id) {
+        BusinessEntity business = businessRepository.findById(id)
+                .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
+        return businessMapper.toResponse(business);
     }
 }

@@ -7,7 +7,10 @@ import com.bookflow.business.entity.BusinessEntity;
 import java.util.List;
 
 public interface BusinessService {
-  BusinessResponse createBusiness(CreateBusinessRequest BusinessRequest, Long ownerID);
-  List<BusinessEntity> getAllBusiness();
+    BusinessResponse createBusiness(CreateBusinessRequest BusinessRequest, Long ownerID);
+
+    List<BusinessResponse> getAllBusiness();
+
+    BusinessResponse getBusinessById(Long id);
 
 }

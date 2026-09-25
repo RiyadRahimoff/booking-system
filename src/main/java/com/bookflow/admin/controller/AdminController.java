@@ -1,6 +1,7 @@
 package com.bookflow.admin.controller;
 
 import com.bookflow.admin.service.concrete.AdminServiceHandler;
+import com.bookflow.business.dto.response.BusinessResponse;
 import com.bookflow.business.entity.BusinessEntity;
 import com.bookflow.business.service.concrete.BusinessServiceHandler;
 import com.bookflow.user.dto.response.UserResponse;
@@ -40,8 +41,14 @@ public class AdminController {
 
     @GetMapping("/all/business")
     @ResponseStatus(HttpStatus.OK)
-    public List<BusinessEntity> getAllBusiness() {
+    public List<BusinessResponse> getAllBusiness() {
       return  businessServiceHandler.getAllBusiness();
+    }
+
+    @GetMapping("/business/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BusinessResponse getBusinessById(@PathVariable Long id) {
+         return businessServiceHandler.getBusinessById(id);
     }
 
 }

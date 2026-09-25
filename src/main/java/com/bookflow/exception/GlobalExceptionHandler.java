@@ -100,4 +100,13 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
 
     }
+
+    @ExceptionHandler(BusinessNotFoundException.class)
+    ResponseEntity<?> BusinessNotFoundException (BusinessNotFoundException exception){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+
+    }
 }

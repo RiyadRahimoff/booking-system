@@ -24,4 +24,10 @@ public class BusinessController {
     ) {
         return serviceHandler.createBusiness(request, principal.user().getId());
     }
+
+    @GetMapping("/my-business")
+    @ResponseStatus(HttpStatus.OK)
+    public BusinessResponse getBusinessById(@AuthenticationPrincipal UserPrincipal principal) {
+        return serviceHandler.getBusinessById(principal.user().getId());
+    }
 }
