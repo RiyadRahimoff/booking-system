@@ -31,8 +31,10 @@ public class BusinessController {
 
     @GetMapping("/my-business")
     @ResponseStatus(HttpStatus.OK)
-    public BusinessResponseAdmin getBusinessById(@AuthenticationPrincipal UserPrincipal principal) {
-        return serviceHandler.getBusinessByIdAdmin(principal.user().getId());
+    public BusinessDetailsResponse getMyBusiness(
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        return serviceHandler.getMyBusiness(principal.user().getId());
     }
 
     @GetMapping("/all-business")
@@ -45,5 +47,11 @@ public class BusinessController {
     @ResponseStatus(HttpStatus.OK)
     public BusinessDetailsResponse getBusinessById(@PathVariable Long id) {
         return serviceHandler.getBusinessById(id);
+    }
+
+    @DeleteMapping("/delete-me")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteBusiness(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        serviceHandler.deleteBusiness(userPrincipal.user().getId());
     }
 }

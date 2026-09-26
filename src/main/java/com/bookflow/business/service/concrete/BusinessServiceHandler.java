@@ -17,9 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-import static com.bookflow.business.enums.BusinessStatus.ACTIVE;
-import static com.bookflow.business.enums.BusinessStatus.PENDING;
+import static com.bookflow.business.enums.BusinessStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,18 +30,24 @@ public class BusinessServiceHandler implements BusinessService {
 
     @Override
     public BusinessResponseAdmin createBusiness(CreateBusinessRequest businessRequest, Long ownerID) {
-        if (businessRepository.existsByOwner_Id(ownerID)) {
+        BusinessEntity business = new BusinessEntity();
+
+        Optional<BusinessEntity> existingBusiness = businessRepository.findByOwner_Id(ownerID);
+
+        if (existingBusiness.isPresent() && existingBusiness.get().getStatus() != INACTIVE) {
             throw new BusinessAlreadyExistsException(
                     "Owner already has a business and cannot create a second one"
             );
         }
+
+        existingBusiness.ifPresent(businessRepository::delete);
 
         UserEntity owner = userRepository.findById(ownerID)
                 .orElseThrow(() ->
                         new UserNotFoundException("Owner not found")
                 );
 
-        BusinessEntity business = new BusinessEntity();
+
         business.setName(businessRequest.name());
         business.setEmail(businessRequest.email());
         business.setDescription(businessRequest.description());
@@ -56,7 +62,15 @@ public class BusinessServiceHandler implements BusinessService {
         BusinessEntity savedBusiness = businessRepository.save(business);
 
         return businessMapper.toResponseAdmin(savedBusiness);
+    }
 
+    @Override
+    public BusinessDetailsResponse getBusinessById(Long id) {
+        BusinessEntity business = businessRepository.findById(id)
+                .orElseThrow(() ->
+                        new BusinessNotFoundException("Business not found!"));
+
+        return businessMapper.toDetailsResponse(business);
     }
 
     @Override
@@ -82,9 +96,10 @@ public class BusinessServiceHandler implements BusinessService {
     }
 
     @Override
-    public BusinessDetailsResponse getBusinessById(Long id) {
-        BusinessEntity business = businessRepository.findById(id)
-                .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
+    public BusinessDetailsResponse getMyBusiness(Long ownerId) {
+        BusinessEntity business = businessRepository.findByOwner_Id(ownerId)
+                .orElseThrow(() ->
+                        new BusinessNotFoundException("Business not found!"));
 
         return businessMapper.toDetailsResponse(business);
     }
@@ -107,5 +122,14 @@ public class BusinessServiceHandler implements BusinessService {
         BusinessEntity savedBusiness = businessRepository.save(business);
 
         return businessMapper.toResponseAdmin(savedBusiness);
+    }
+
+    @Override
+    public void deleteBusiness(Long id) {
+        BusinessEntity business = businessRepository.findByOwner_Id(id)
+                .orElseThrow(() -> new BusinessNotFoundException("Business not found"));
+        business.setStatus(INACTIVE);
+        businessRepository.save(business);
+
     }
 }

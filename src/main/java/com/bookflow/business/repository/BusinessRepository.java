@@ -13,4 +13,8 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Long> {
     Optional<BusinessEntity> findByOwner_Id(Long ownerId);
 
     List<BusinessEntity> findAllByStatus(BusinessStatus status);
+
+    Optional<BusinessEntity> findByOwner_IdAndStatusNot(Long ownerId, BusinessStatus status);
+
+
 }

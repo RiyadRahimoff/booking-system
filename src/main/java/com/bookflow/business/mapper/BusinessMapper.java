@@ -44,6 +44,7 @@ public class BusinessMapper {
                 business.getId(),
                 business.getName(),
                 business.getDescription(),
+                business.getStatus(),
                 business.getPhone(),
                 business.getEmail(),
                 business.getAddress(),

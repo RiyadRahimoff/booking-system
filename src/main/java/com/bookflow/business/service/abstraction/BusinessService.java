@@ -16,10 +16,14 @@ public interface BusinessService {
 
     BusinessResponseAdmin getBusinessByIdAdmin(Long id);
 
-    BusinessDetailsResponse getBusinessById(Long id);
+    BusinessDetailsResponse getMyBusiness(Long ownerId);
 
     List<BusinessResponseAdmin> getAllPendingBusiness();
 
+    BusinessDetailsResponse getBusinessById(Long id);
+
     BusinessResponseAdmin approvePendingBusiness(Long businessId);
+
+    void deleteBusiness(Long id);
 
 }
