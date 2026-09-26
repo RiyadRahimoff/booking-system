@@ -1,6 +1,5 @@
 package com.bookflow.business.repository;
 
-import com.bookflow.business.dto.response.BusinessResponse;
 import com.bookflow.business.entity.BusinessEntity;
 import com.bookflow.business.enums.BusinessStatus;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,20 +1,25 @@
 package com.bookflow.business.service.abstraction;
 
 import com.bookflow.business.dto.request.CreateBusinessRequest;
-import com.bookflow.business.dto.response.BusinessResponse;
-import com.bookflow.business.entity.BusinessEntity;
+import com.bookflow.business.dto.response.BusinessDetailsResponse;
+import com.bookflow.business.dto.response.BusinessListResponse;
+import com.bookflow.business.dto.response.BusinessResponseAdmin;
 
 import java.util.List;
 
 public interface BusinessService {
-    BusinessResponse createBusiness(CreateBusinessRequest BusinessRequest, Long ownerID);
+    BusinessResponseAdmin createBusiness(CreateBusinessRequest BusinessRequest, Long ownerID);
 
-    List<BusinessResponse> getAllBusiness();
+    List<BusinessResponseAdmin> getAllBusinessAdmin();
 
-    BusinessResponse getBusinessById(Long id);
+    List<BusinessListResponse> getAllActiveBusiness();
 
-    List<BusinessResponse> getAllPendingBusiness();
+    BusinessResponseAdmin getBusinessByIdAdmin(Long id);
 
-    BusinessResponse approvePendingBusiness(Long businessId);
+    BusinessDetailsResponse getBusinessById(Long id);
+
+    List<BusinessResponseAdmin> getAllPendingBusiness();
+
+    BusinessResponseAdmin approvePendingBusiness(Long businessId);
 
 }

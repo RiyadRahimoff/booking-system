@@ -1,8 +1,7 @@
 package com.bookflow.admin.controller;
 
 import com.bookflow.admin.service.concrete.AdminServiceHandler;
-import com.bookflow.business.dto.response.BusinessResponse;
-import com.bookflow.business.entity.BusinessEntity;
+import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.service.concrete.BusinessServiceHandler;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
@@ -39,27 +38,27 @@ public class AdminController {
         return adminServiceHandler.getUserByID(id);
     }
 
-    @GetMapping("/all/business")
+    @GetMapping("/all/admin-business")
     @ResponseStatus(HttpStatus.OK)
-    public List<BusinessResponse> getAllBusiness() {
-      return  businessServiceHandler.getAllBusiness();
+    public List<BusinessResponseAdmin> getAllBusinessAdmin() {
+      return  businessServiceHandler.getAllBusinessAdmin();
     }
 
     @GetMapping("/business/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BusinessResponse getBusinessById(@PathVariable Long id) {
-         return businessServiceHandler.getBusinessById(id);
+    public BusinessResponseAdmin getBusinessById(@PathVariable Long id) {
+         return businessServiceHandler.getBusinessByIdAdmin(id);
     }
 
     @GetMapping("/pending-business")
     @ResponseStatus(HttpStatus.OK)
-    public List<BusinessResponse> getAllPendingBusiness() {
+    public List<BusinessResponseAdmin> getAllPendingBusiness() {
         return businessServiceHandler.getAllPendingBusiness();
     }
 
     @PostMapping("/business/approve/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BusinessResponse approvePendingBusiness(@PathVariable Long id) {
+    public BusinessResponseAdmin approvePendingBusiness(@PathVariable Long id) {
         return businessServiceHandler.approvePendingBusiness(id);
     }
 

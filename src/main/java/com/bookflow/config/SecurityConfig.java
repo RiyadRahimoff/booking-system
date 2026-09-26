@@ -24,6 +24,8 @@ public class SecurityConfig {
             "/auth/refresh-token",
             "/auth/forgot-Password",
             "/auth/reset-Password",
+            "/business/all-business",
+            "/business/{id}",
             "/test/**",
 
             "/swagger-ui/**",

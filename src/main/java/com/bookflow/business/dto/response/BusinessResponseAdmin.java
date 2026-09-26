@@ -5,7 +5,7 @@ import com.bookflow.business.enums.BusinessStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record BusinessResponse(
+public record BusinessResponseAdmin(
         Long id,
         String name,
         String description,
