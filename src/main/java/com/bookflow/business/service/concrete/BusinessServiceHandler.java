@@ -5,6 +5,7 @@ import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.entity.BusinessEntity;
+import com.bookflow.business.enums.BusinessStatus;
 import com.bookflow.business.mapper.BusinessMapper;
 import com.bookflow.business.repository.BusinessRepository;
 import com.bookflow.business.service.abstraction.BusinessService;
@@ -69,6 +70,9 @@ public class BusinessServiceHandler implements BusinessService {
         BusinessEntity business = businessRepository.findById(id)
                 .orElseThrow(() ->
                         new BusinessNotFoundException("Business not found!"));
+        if (business.getStatus() != ACTIVE) {
+            throw new BusinessNotFoundException("Business InActive now!");
+        }
 
         return businessMapper.toDetailsResponse(business);
     }

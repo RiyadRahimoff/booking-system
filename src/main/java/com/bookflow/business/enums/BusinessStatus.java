@@ -4,7 +4,6 @@ public enum BusinessStatus {
     ACTIVE,
     INACTIVE,
     PENDING,
-    APPROVED,
     REJECTED,
     BLOCKED
 }
