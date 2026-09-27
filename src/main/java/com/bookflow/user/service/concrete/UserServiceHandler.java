@@ -81,7 +81,7 @@ public class UserServiceHandler implements UserService {
     public String deleteUser(Long id, DeleteAccountPasswordConfirmRequest pass) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found ????"));
-        if(passwordEncoder.matches(pass.password(),user.getPassword()) && user.getStatus() == StatusEnum.ACTIVE) {
+        if(passwordEncoder.matches(pass.password(),user.getPassword()) && user.getStatus() != StatusEnum.PENDING) {
             refreshTokenRepository.deleteUserById(id);
             userRepository.delete(user);
         }
