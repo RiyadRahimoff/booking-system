@@ -7,9 +7,12 @@ import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.service.concrete.UserServiceHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @RestController
@@ -51,9 +54,12 @@ public class AdminController {
     }
 
     @GetMapping("/pending-business")
-    @ResponseStatus(HttpStatus.OK)
-    public List<BusinessResponseAdmin> getAllPendingBusiness() {
-        return businessServiceHandler.getAllPendingBusiness();
+    public ResponseEntity<Page<BusinessResponseAdmin>> getAllPendingBusiness(
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                businessServiceHandler.getAllPendingBusiness(pageable)
+        );
     }
 
     @PostMapping("/business/approve/{id}")

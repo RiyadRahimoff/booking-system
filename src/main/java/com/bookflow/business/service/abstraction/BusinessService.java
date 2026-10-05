@@ -4,7 +4,9 @@ import com.bookflow.business.dto.request.CreateBusinessRequest;
 import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface BusinessService {
@@ -12,13 +14,13 @@ public interface BusinessService {
 
     List<BusinessResponseAdmin> getAllBusinessAdmin();
 
-    List<BusinessListResponse> getAllActiveBusiness();
+    Page<BusinessListResponse> getAllActiveBusiness(Pageable pageable);
 
     BusinessResponseAdmin getBusinessByIdAdmin(Long id);
 
     BusinessDetailsResponse getMyBusiness(Long ownerId);
 
-    List<BusinessResponseAdmin> getAllPendingBusiness();
+    Page<BusinessResponseAdmin> getAllPendingBusiness(Pageable pageable);
 
     BusinessDetailsResponse getBusinessById(Long id);
 

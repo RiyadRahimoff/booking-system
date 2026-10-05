@@ -7,12 +7,14 @@ import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.service.concrete.BusinessServiceHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/business")
@@ -38,9 +40,12 @@ public class BusinessController {
     }
 
     @GetMapping("/all-business")
-    @ResponseStatus(HttpStatus.OK)
-    public List<BusinessListResponse> getAllBusiness() {
-       return serviceHandler.getAllActiveBusiness();
+    public ResponseEntity<Page<BusinessListResponse>> getAllActiveBusiness(
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                serviceHandler.getAllActiveBusiness(pageable)
+        );
     }
 
     @GetMapping("/{id}")

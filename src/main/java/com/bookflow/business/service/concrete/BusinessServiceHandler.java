@@ -5,7 +5,6 @@ import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.entity.BusinessEntity;
-import com.bookflow.business.enums.BusinessStatus;
 import com.bookflow.business.mapper.BusinessMapper;
 import com.bookflow.business.repository.BusinessRepository;
 import com.bookflow.business.service.abstraction.BusinessService;
@@ -15,8 +14,10 @@ import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,10 +87,9 @@ public class BusinessServiceHandler implements BusinessService {
     }
 
     @Override
-    public List<BusinessListResponse> getAllActiveBusiness() {
-        return businessRepository.findAllByStatus(ACTIVE).stream()
-                .map(businessMapper::toResponse)
-                .toList();
+    public Page<BusinessListResponse> getAllActiveBusiness(Pageable pageable) {
+        return businessRepository.findAllByStatus(ACTIVE, pageable)
+                .map(businessMapper::toResponse);
     }
 
     @Override
@@ -109,11 +109,9 @@ public class BusinessServiceHandler implements BusinessService {
     }
 
     @Override
-    public List<BusinessResponseAdmin> getAllPendingBusiness() {
-        return businessRepository.findAllByStatus(PENDING)
-                .stream()
-                .map(businessMapper::toResponseAdmin)
-                .toList();
+    public Page<BusinessResponseAdmin> getAllPendingBusiness(Pageable pageable) {
+        return businessRepository.findAllByStatus(PENDING, pageable)
+                .map(businessMapper::toResponseAdmin);
     }
 
     @Override
