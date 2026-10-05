@@ -1,6 +1,7 @@
 package com.bookflow.business.entity;
 
 import com.bookflow.business.enums.BusinessStatus;
+import com.bookflow.business.enums.Region;
 import com.bookflow.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,7 +44,8 @@ public class BusinessEntity {
     @Enumerated(value = STRING)
     BusinessStatus status;
 
-    String city;
+    @Enumerated(value = STRING)
+    Region city;
 
     BigDecimal latitude;
 

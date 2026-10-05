@@ -29,7 +29,7 @@ public class BusinessMapper {
                 business.getPhone(),
                 business.getEmail(),
                 business.getAddress(),
-                business.getCity(),
+                business.getCity().toString(),
                 business.getLatitude(),
                 business.getLongitude(),
                 business.getStatus(),
@@ -48,7 +48,7 @@ public class BusinessMapper {
                 business.getPhone(),
                 business.getEmail(),
                 business.getAddress(),
-                business.getCity(),
+                business.getCity().toString(),
                 business.getLatitude(),
                 business.getLongitude()
         );
@@ -60,7 +60,7 @@ public class BusinessMapper {
                 business.getName(),
                 business.getDescription(),
                 business.getAddress(),
-                business.getCity()
+                business.getCity().toString()
         );
     }
 }
