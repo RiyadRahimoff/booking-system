@@ -82,11 +82,13 @@ public class UserServiceHandler implements UserService {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("User not found!?"));
         if(passwordEncoder.matches(request.oldPassword(),user.getPassword())){
-            user.setPassword(request.newPassword());
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
             userRepository.save(user);
+            refreshTokenRepository.findByUser_Id(user.getId())
+                    .ifPresent(refreshTokenRepository::delete);
         }
         else{
-            return "Old Password is not correct!";
+            throw new InvalidCredentialsException("Old password is incorrect!");
         }
         return "Password changed successfully!";
     }
