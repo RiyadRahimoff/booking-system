@@ -6,6 +6,7 @@ import com.bookflow.exception.InvalidCredentialsException;
 import com.bookflow.exception.InvalidRoleException;
 import com.bookflow.exception.UserNotFoundException;
 import com.bookflow.exception.UserStatusPendingException;
+import com.bookflow.user.dto.request.ChangePasswordRequest;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.entity.UserEntity;
@@ -74,6 +75,20 @@ public class UserServiceHandler implements UserService {
         user.setStatus(StatusEnum.INACTIVE);
         UserEntity savedUser = userRepository.save(user);
         return userMapper.toResponse(savedUser);
+    }
+
+    @Override
+    public String changePassword(Long id,ChangePasswordRequest request) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(()-> new UserNotFoundException("User not found!?"));
+        if(passwordEncoder.matches(request.oldPassword(),user.getPassword())){
+            user.setPassword(request.newPassword());
+            userRepository.save(user);
+        }
+        else{
+            return "Old Password is not correct!";
+        }
+        return "Password changed successfully!";
     }
 
     @Override

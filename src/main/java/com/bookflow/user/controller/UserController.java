@@ -2,6 +2,7 @@ package com.bookflow.user.controller;
 
 import com.bookflow.auth.dto.request.DeleteAccountPasswordConfirmRequest;
 import com.bookflow.auth.security.UserPrincipal;
+import com.bookflow.user.dto.request.ChangePasswordRequest;
 import com.bookflow.user.dto.request.UpdateUserRequest;
 import com.bookflow.user.dto.response.UserResponse;
 import com.bookflow.user.service.concrete.UserServiceHandler;
@@ -23,6 +24,11 @@ public class UserController {
         return userServiceHandler.getUserById(principal.user().getId());
     }
 
+    @PatchMapping("/me/change-password")
+    @ResponseStatus(HttpStatus.OK)
+    public String changePassword(@AuthenticationPrincipal UserPrincipal principal, @RequestBody ChangePasswordRequest request) {
+        return userServiceHandler.changePassword(principal.user().getId(), request);
+    }
 
     @PatchMapping("/me/update")
     @ResponseStatus(HttpStatus.OK)
