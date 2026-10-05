@@ -8,6 +8,7 @@ import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.service.concrete.UserServiceHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,8 +56,11 @@ public class AdminController {
 
     @GetMapping("/pending-business")
     public ResponseEntity<Page<BusinessResponseAdmin>> getAllPendingBusiness(
-            Pageable pageable
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
+        Pageable pageable = PageRequest.of(page, size);
+
         return ResponseEntity.ok(
                 businessServiceHandler.getAllPendingBusiness(pageable)
         );
