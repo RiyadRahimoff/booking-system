@@ -2,10 +2,12 @@ package com.bookflow.business.controller;
 
 import com.bookflow.auth.security.UserPrincipal;
 import com.bookflow.business.dto.request.CreateBusinessRequest;
+import com.bookflow.business.dto.request.UpdateBusinessRequest;
 import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.service.concrete.BusinessServiceHandler;
+import liquibase.license.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +42,7 @@ public class BusinessController {
     }
 
     @GetMapping("/all-business")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Page<BusinessListResponse>> getAllActiveBusiness(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -61,5 +64,12 @@ public class BusinessController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteBusiness(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         serviceHandler.deleteBusiness(userPrincipal.user().getId());
+    }
+
+    @PatchMapping("/update/me/business")
+    @ResponseStatus(HttpStatus.OK)
+    public BusinessDetailsResponse updateBusinessDetails(@AuthenticationPrincipal UserPrincipal user,
+                                                         @RequestBody UpdateBusinessRequest request) {
+        return serviceHandler.updateBusinessDetails(user.user().getId(), request);
     }
 }

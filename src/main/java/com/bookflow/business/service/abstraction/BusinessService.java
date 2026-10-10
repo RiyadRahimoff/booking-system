@@ -1,6 +1,7 @@
 package com.bookflow.business.service.abstraction;
 
 import com.bookflow.business.dto.request.CreateBusinessRequest;
+import com.bookflow.business.dto.request.UpdateBusinessRequest;
 import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
@@ -13,6 +14,8 @@ public interface BusinessService {
     BusinessResponseAdmin createBusiness(CreateBusinessRequest BusinessRequest, Long ownerID);
 
     List<BusinessResponseAdmin> getAllBusinessAdmin();
+
+    BusinessDetailsResponse updateBusinessDetails(Long id, UpdateBusinessRequest request);
 
     Page<BusinessListResponse> getAllActiveBusiness(Pageable pageable);
 

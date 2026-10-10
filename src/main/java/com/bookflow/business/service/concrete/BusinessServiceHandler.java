@@ -1,6 +1,7 @@
 package com.bookflow.business.service.concrete;
 
 import com.bookflow.business.dto.request.CreateBusinessRequest;
+import com.bookflow.business.dto.request.UpdateBusinessRequest;
 import com.bookflow.business.dto.response.BusinessDetailsResponse;
 import com.bookflow.business.dto.response.BusinessListResponse;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
@@ -15,9 +16,9 @@ import com.bookflow.user.entity.UserEntity;
 import com.bookflow.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +85,25 @@ public class BusinessServiceHandler implements BusinessService {
                 .stream()
                 .map(businessMapper::toResponseAdmin)
                 .toList();
+    }
+
+    @Override
+    public BusinessDetailsResponse updateBusinessDetails(Long id, UpdateBusinessRequest request) {
+        BusinessEntity business = businessRepository.findById(id)
+                .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
+        if(business.getStatus()!=ACTIVE){
+            throw new BusinessNotFoundException("Business not active");
+        }
+        business.setName(request.name());
+        business.setDescription(request.description());
+        business.setEmail(request.email());
+        business.setLongitude(request.longitude());
+        business.setLatitude(request.latitude());
+        business.setPhone(request.phone());
+        business.setPhone(request.phone());
+
+        return businessMapper.toDetailsResponse(businessRepository.save(business));
+
     }
 
     @Override
