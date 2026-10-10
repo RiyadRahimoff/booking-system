@@ -89,7 +89,7 @@ public class BusinessServiceHandler implements BusinessService {
 
     @Override
     public BusinessDetailsResponse updateBusinessDetails(Long id, UpdateBusinessRequest request) {
-        BusinessEntity business = businessRepository.findById(id)
+        BusinessEntity business = businessRepository.findByOwner_Id(id)
                 .orElseThrow(() -> new BusinessNotFoundException("Business not found!"));
         if(business.getStatus()!=ACTIVE){
             throw new BusinessNotFoundException("Business not active");
