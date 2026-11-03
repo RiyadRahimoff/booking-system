@@ -43,7 +43,8 @@ public class UserServiceHandler implements UserService {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User does not exist with this email: " + email));
         return userMapper.toResponse(user);
     }
-    // Will be updated
+
+
     @Override
     public UserResponse updateUser(Long id, UpdateUserRequest updateUser) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -78,16 +79,15 @@ public class UserServiceHandler implements UserService {
     }
 
     @Override
-    public String changePassword(Long id,ChangePasswordRequest request) {
+    public String changePassword(Long id, ChangePasswordRequest request) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(()-> new UserNotFoundException("User not found!?"));
-        if(passwordEncoder.matches(request.oldPassword(),user.getPassword())){
+                .orElseThrow(() -> new UserNotFoundException("User not found!?"));
+        if (passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(request.newPassword()));
             userRepository.save(user);
             refreshTokenRepository.findByUser_Id(user.getId())
                     .ifPresent(refreshTokenRepository::delete);
-        }
-        else{
+        } else {
             throw new InvalidCredentialsException("Old password is incorrect!");
         }
         return "Password changed successfully!";
@@ -98,13 +98,15 @@ public class UserServiceHandler implements UserService {
     public String deleteUser(Long id, DeleteAccountPasswordConfirmRequest pass) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found ????"));
-        if(passwordEncoder.matches(pass.password(),user.getPassword()) && user.getStatus() != StatusEnum.PENDING) {
+
+        if (passwordEncoder.matches(pass.password(), user.getPassword()) && user.getStatus() != StatusEnum.PENDING) {
             refreshTokenRepository.deleteUserById(id);
             userRepository.delete(user);
-        }
-        else{
+        } else {
             throw new InvalidCredentialsException("Password not correct!!!");
         }
         return "This account deleted successfully";
     }
+
+
 }
