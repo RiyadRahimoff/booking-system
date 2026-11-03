@@ -6,12 +6,36 @@ import com.bookflow.auth.service.concrete.AuthServiceHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.bookflow.auth.security.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthServiceHandler authServiceHandler;
+
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getMe(
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        if (principal == null || principal.user() == null) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build();
+        }
+
+        var user = principal.user();
+
+        return ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "email", user.getEmail(),
+                "role", user.getRole().name()
+        ));
+    }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)

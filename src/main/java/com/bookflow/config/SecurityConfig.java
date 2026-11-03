@@ -1,9 +1,11 @@
+
 package com.bookflow.config;
 
 import com.bookflow.auth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,30 +29,75 @@ public class SecurityConfig {
             "/auth/refresh-token",
             "/auth/forgot-Password",
             "/auth/reset-Password",
-            "/business/all-business",
-            "/business/{id}",
             "/test/**",
-
             "/swagger-ui/**",
             "/v3/api-docs/**"
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http
+    ) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults())
+
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
 
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
 
                         .requestMatchers(PUBLIC_ENDPOINTS)
                         .permitAll()
 
+                        // Login olan istənilən istifadəçi
+                        .requestMatchers(HttpMethod.GET, "/auth/me")
+                        .authenticated()
+
+                        // Admin endpointləri
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
+
+                        // Owner endpointləri
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/business/create"
+                        )
+                        .hasRole("OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/business/my-business"
+                        )
+                        .hasRole("OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/business/update/me/business"
+                        )
+                        .hasRole("OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/business/delete-me"
+                        )
+                        .hasRole("OWNER")
+
+                        // Biznesləri hamı görə bilər
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/business/all-business",
+                                "/business/{id}"
+                        )
+                        .permitAll()
 
                         .anyRequest()
                         .authenticated()
@@ -60,7 +107,6 @@ public class SecurityConfig {
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
-        http.cors(Customizer.withDefaults());
 
         return http.build();
     }
