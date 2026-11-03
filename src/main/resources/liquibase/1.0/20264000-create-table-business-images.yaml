@@ -1,0 +1,76 @@
+
+databaseChangeLog:
+  - changeSet:
+      id: 20264000
+      author: Riyad Rahimov
+      changes:
+        - createTable:
+            tableName: business_images
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: business_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: image_url
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: public_id
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: sort_order
+                  type: INT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: business_images
+            baseColumnNames: business_id
+            referencedTableName: business
+            referencedColumnNames: id
+            constraintName: fk_business_images_business
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: business_images
+            indexName: idx_business_images_business_id
+            columns:
+              - column:
+                  name: business_id
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              CREATE UNIQUE INDEX uq_business_cover_logo
+              ON business_images (business_id, type)
+              WHERE type IN ('COVER', 'LOGO');
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE business_images
+              ADD CONSTRAINT chk_business_image_type
+              CHECK (type IN ('COVER', 'LOGO', 'GALLERY'));
