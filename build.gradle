@@ -47,6 +47,9 @@ dependencies {
     // ---------- API DOCS / SWAGGER ----------
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 
+    // CLOUDINARY
+    implementation 'com.cloudinary:cloudinary-http5:2.4.0'
+
     // ---------- DEV TOOLS ----------
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
