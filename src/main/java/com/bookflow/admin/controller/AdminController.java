@@ -1,5 +1,6 @@
 package com.bookflow.admin.controller;
 
+import com.bookflow.admin.dto.response.AdminUsersResponse;
 import com.bookflow.admin.service.concrete.AdminServiceHandler;
 import com.bookflow.business.dto.response.BusinessResponseAdmin;
 import com.bookflow.business.service.concrete.BusinessServiceHandler;
@@ -38,7 +39,7 @@ public class AdminController {
 
     @GetMapping("/user/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserEntity getUserByID(@PathVariable Long id) {
+    public AdminUsersResponse getUserByID(@PathVariable Long id) {
         return adminServiceHandler.getUserByID(id);
     }
 

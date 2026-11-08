@@ -41,15 +41,12 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
                 .cors(Customizer.withDefaults())
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**")
@@ -58,15 +55,12 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_ENDPOINTS)
                         .permitAll()
 
-                        // Login olan istənilən istifadəçi
                         .requestMatchers(HttpMethod.GET, "/auth/me")
                         .authenticated()
 
-                        // Admin endpointləri
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
-                        // Owner endpointləri
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/business/create"
@@ -91,7 +85,30 @@ public class SecurityConfig {
                         )
                         .hasRole("OWNER")
 
-                        // Biznesləri hamı görə bilər
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/business/{businessId}/images"
+                        )
+                        .permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/business/{businessId}/images"
+                        )
+                        .hasRole("OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.PATCH,
+                                "/business/{businessId}/images/{imageId}/cover"
+                        )
+                        .hasRole("OWNER")
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/business/{businessId}/images/{imageId}"
+                        )
+                        .hasRole("OWNER")
+
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/business/all-business",
@@ -102,7 +119,6 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

@@ -137,7 +137,7 @@ public class AuthServiceHandler implements AuthService {
                         new UserNotFoundException("User not found")
                 );
 
-        String key = "reset-password: " + request.email();
+        String key = "resetPassword: " + request.email();
 
         String storedCode = redisTemplate.opsForValue().get(key);
 
