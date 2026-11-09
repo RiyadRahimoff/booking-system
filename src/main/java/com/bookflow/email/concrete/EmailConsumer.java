@@ -2,6 +2,7 @@ package com.bookflow.email.concrete;
 
 import com.bookflow.config.RabbitMQConfig;
 import com.bookflow.email.abstraction.EmailService;
+import com.bookflow.email.entity.EmailBlockMessage;
 import com.bookflow.email.entity.EmailVerificationMessage;
 import com.bookflow.exception.EmailSendException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,21 @@ public class EmailConsumer {
         } catch (Exception e) {
             log.error("Failed to process verification email for {}", message.email(), e);
             throw new EmailSendException("Email system crashed!");
+        }
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.EMAIL_BLOCK_QUEUE)
+    public void consumeBlockEmail(EmailBlockMessage message) {
+        log.info("Consumed block email message for {}", message.email());
+
+        try {
+            emailService.sendBlockUserMessage(
+                    message.email(),
+                    message.message()
+            );
+        } catch (Exception e) {
+            log.error("Failed to process block email for {}", message.email(), e);
+            throw new EmailSendException("Failed to send account blocked email!");
         }
     }
 }
