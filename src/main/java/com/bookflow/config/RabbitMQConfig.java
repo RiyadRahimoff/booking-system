@@ -11,26 +11,51 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
+
     public static final String EMAIL_EXCHANGE = "email.exchange";
+
     public static final String EMAIL_VERIFICATION_QUEUE = "email.verification.queue";
     public static final String EMAIL_VERIFICATION_ROUTING_KEY = "email.verification";
+
+    public static final String EMAIL_BLOCK_QUEUE = "email.block.queue";
+    public static final String EMAIL_BLOCK_ROUTING_KEY = "email.block";
 
     @Bean
     public DirectExchange emailExchange() {
         return new DirectExchange(EMAIL_EXCHANGE);
     }
 
+    // Verification Queue
     @Bean
     public Queue emailVerificationQueue() {
         return new Queue(EMAIL_VERIFICATION_QUEUE, true);
     }
 
     @Bean
-    public Binding emailVerificationBinding(Queue emailVerificationQueue, DirectExchange emailExchange) {
+    public Binding emailVerificationBinding(
+            Queue emailVerificationQueue,
+            DirectExchange emailExchange) {
+
         return BindingBuilder
                 .bind(emailVerificationQueue)
                 .to(emailExchange)
                 .with(EMAIL_VERIFICATION_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue emailBlockQueue() {
+        return new Queue(EMAIL_BLOCK_QUEUE, true);
+    }
+
+    @Bean
+    public Binding emailBlockBinding(
+            Queue emailBlockQueue,
+            DirectExchange emailExchange) {
+
+        return BindingBuilder
+                .bind(emailBlockQueue)
+                .to(emailExchange)
+                .with(EMAIL_BLOCK_ROUTING_KEY);
     }
 
     @Bean
