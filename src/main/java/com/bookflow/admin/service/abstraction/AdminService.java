@@ -9,4 +9,6 @@ public interface AdminService {
     List<UserEntity> getUsers();
 
     AdminUsersResponse getUserByID(Long id);
+
+    void blockUser (String blockMessage, Long id);
 }

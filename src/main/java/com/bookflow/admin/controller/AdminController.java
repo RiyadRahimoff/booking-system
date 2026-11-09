@@ -56,6 +56,7 @@ public class AdminController {
     }
 
     @GetMapping("/pending-business")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Page<BusinessResponseAdmin>> getAllPendingBusiness(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -65,6 +66,12 @@ public class AdminController {
         return ResponseEntity.ok(
                 businessServiceHandler.getAllPendingBusiness(pageable)
         );
+    }
+
+    @PatchMapping("/block-user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void blockUser(@RequestBody String blockMessage, @PathVariable Long id) {
+        adminServiceHandler.blockUser(blockMessage,id);
     }
 
     @PostMapping("/business/approve/{id}")
