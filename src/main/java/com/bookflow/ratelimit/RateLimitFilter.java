@@ -95,7 +95,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             case "/admin/get/users" ->
                 new RateLimitRule(
                         "getAllusers",
-                        2,
+                        5,
                         Duration.ofSeconds(30)
                 );
 
