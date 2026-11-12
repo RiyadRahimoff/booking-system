@@ -6,4 +6,5 @@ import org.springframework.stereotype.Component;
 public interface EmailService {
     void sendVerificationCode(String toEmail, String code);
     void sendBlockUserMessage(String toEmail, String reason);
+    void sendUnblockUserMessage(String toEmail);
 }

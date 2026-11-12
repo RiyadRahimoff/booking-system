@@ -3,6 +3,7 @@ package com.bookflow.email.concrete;
 import com.bookflow.config.RabbitMQConfig;
 import com.bookflow.email.abstraction.EmailProducer;
 import com.bookflow.email.entity.EmailBlockMessage;
+import com.bookflow.email.entity.EmailUnblockMessage;
 import com.bookflow.email.entity.EmailVerificationMessage;
 import com.bookflow.exception.RabbitMQException;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,18 @@ public class EmailProducerHandler implements EmailProducer {
             throw new RabbitMQException("RabbitMQ crashed!");
         }
 
+    }
+
+    @Override
+    public void sendUnbLockEmailMessage(EmailUnblockMessage emailUnblockMessage) {
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EMAIL_EXCHANGE,
+                    RabbitMQConfig.EMAIL_UNBLOCK_ROUTING_KEY,
+                    emailUnblockMessage);
+            log.info("Unblock email message queued for {}", emailUnblockMessage.email());
+        } catch (AmqpException e){
+            log.error("Failed to publish verification email message for {}", emailUnblockMessage.email(), e);
+            throw new RabbitMQException("RabbitMQ crashed!");
+        }
     }
 }

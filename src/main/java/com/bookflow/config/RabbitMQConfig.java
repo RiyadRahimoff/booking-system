@@ -20,12 +20,16 @@ public class RabbitMQConfig {
     public static final String EMAIL_BLOCK_QUEUE = "email.block.queue";
     public static final String EMAIL_BLOCK_ROUTING_KEY = "email.block";
 
+    public static final String EMAIL_UNBLOCK_QUEUE = "email.unblock.queue";
+    public static final String EMAIL_UNBLOCK_ROUTING_KEY = "email.unblock";
+
+
     @Bean
     public DirectExchange emailExchange() {
         return new DirectExchange(EMAIL_EXCHANGE);
     }
 
-    // Verification Queue
+
     @Bean
     public Queue emailVerificationQueue() {
         return new Queue(EMAIL_VERIFICATION_QUEUE, true);
@@ -42,6 +46,7 @@ public class RabbitMQConfig {
                 .with(EMAIL_VERIFICATION_ROUTING_KEY);
     }
 
+
     @Bean
     public Queue emailBlockQueue() {
         return new Queue(EMAIL_BLOCK_QUEUE, true);
@@ -57,6 +62,25 @@ public class RabbitMQConfig {
                 .to(emailExchange)
                 .with(EMAIL_BLOCK_ROUTING_KEY);
     }
+
+
+    @Bean
+    public Queue emailUnblockQueue() {
+        return new Queue(EMAIL_UNBLOCK_QUEUE, true);
+    }
+
+    @Bean
+    public Binding emailUnblockBinding(
+            Queue emailUnblockQueue,
+            DirectExchange emailExchange) {
+
+        return BindingBuilder
+                .bind(emailUnblockQueue)
+                .to(emailExchange)
+                .with(EMAIL_UNBLOCK_ROUTING_KEY);
+    }
+
+
 
     @Bean
     public MessageConverter jsonMessageConverter() {

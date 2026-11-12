@@ -65,4 +65,29 @@ public class EmailServiceHandler implements EmailService {
             throw new EmailSendException("Failed to send account blocked email! " + ex.getMessage());
         }
     }
+
+    @Override
+    public void sendUnblockUserMessage(String toEmail) {
+        SimpleMailMessage message1 = new SimpleMailMessage();
+
+        message1.setTo(toEmail);
+        message1.setSubject("YerimVar — Your Account Has Been Unblocked");
+
+        message1.setText(
+                "Hello,\n\n" +
+                        "We are pleased to inform you that your YerimVar account has been successfully unblocked.\n\n" +
+                        "You can now access your account and use all available platform services again.\n\n" +
+                        "Thank you for your patience and understanding.\n\n" +
+                        "If you have any questions or experience any issues, please contact our support team.\n\n" +
+                        "We appreciate having you as part of YerimVar.\n\n" +
+                        "Best regards,\n" +
+                        "YerimVar Team"
+        );
+
+        try {
+            javaMailSender.send(message1);
+        } catch (Exception ex) {
+            throw new EmailSendException("Failed to send account blocked email! " + ex.getMessage());
+        }
+    }
 }
