@@ -11,4 +11,7 @@ public interface AdminService {
     AdminUsersResponse getUserByID(Long id);
 
     void blockUser (String blockMessage, Long id);
+
+    void unblockUser (Long id);
+
 }

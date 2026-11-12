@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @RestController
@@ -46,13 +47,13 @@ public class AdminController {
     @GetMapping("/all/admin-business")
     @ResponseStatus(HttpStatus.OK)
     public List<BusinessResponseAdmin> getAllBusinessAdmin() {
-      return  businessServiceHandler.getAllBusinessAdmin();
+        return businessServiceHandler.getAllBusinessAdmin();
     }
 
     @GetMapping("/business/{id}")
     @ResponseStatus(HttpStatus.OK)
     public BusinessResponseAdmin getBusinessById(@PathVariable Long id) {
-         return businessServiceHandler.getBusinessByIdAdmin(id);
+        return businessServiceHandler.getBusinessByIdAdmin(id);
     }
 
     @GetMapping("/pending-business")
@@ -71,7 +72,7 @@ public class AdminController {
     @PatchMapping("/block-user/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void blockUser(@RequestBody String blockMessage, @PathVariable Long id) {
-        adminServiceHandler.blockUser(blockMessage,id);
+        adminServiceHandler.blockUser(blockMessage, id);
     }
 
     @PostMapping("/business/approve/{id}")
@@ -80,5 +81,11 @@ public class AdminController {
         return businessServiceHandler.approvePendingBusiness(id);
     }
 
+    @PatchMapping("/unblock-user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void unblockUser(@PathVariable Long id) {
+        adminServiceHandler.unblockUser(id);
+    }
 }
+
 
