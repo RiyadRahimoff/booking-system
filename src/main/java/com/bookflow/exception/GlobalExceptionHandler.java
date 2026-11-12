@@ -109,4 +109,12 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
 
     }
+
+    @ExceptionHandler(UserCannotBlockException.class)
+    ResponseEntity<?> UserCannotBlockException (UserCannotBlockException exception){
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errorResponse);
+    }
 }
